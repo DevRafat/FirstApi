@@ -3,6 +3,7 @@ using FirstApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FirstApi.Migrations
 {
     [DbContext(typeof(AplicationDbContext))]
-    partial class AplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230814225313_adStudent")]
+    partial class adStudent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,7 +43,7 @@ namespace FirstApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Majors", (string)null);
+                    b.ToTable("Majors");
                 });
 
             modelBuilder.Entity("FirstApi.Tables.Student", b =>
@@ -66,7 +69,7 @@ namespace FirstApi.Migrations
 
                     b.HasIndex("MajorID");
 
-                    b.ToTable("Students", (string)null);
+                    b.ToTable("Students");
                 });
 
             modelBuilder.Entity("FirstApi.Tables.Student", b =>

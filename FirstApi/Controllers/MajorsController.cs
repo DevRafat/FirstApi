@@ -1,4 +1,5 @@
 ﻿using FirstApi.Models;
+using FirstApi.Service.Major;
 using FirstApi.Tables;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,17 +12,26 @@ namespace FirstApi.Controllers
     public class MajorsController : ControllerBase
     {
       private readonly AplicationDbContext _context;
+      private readonly IMajorService _majorService;
 
-        public MajorsController(AplicationDbContext context)
+        public MajorsController(AplicationDbContext context, IMajorService majorService)
         {
             _context = context;
+            _majorService = majorService;
         }
 
 
         [HttpGet]
         public async Task<IActionResult>  GetMajors()
         {
-            var list = await _context.Majors.OrderBy(c=>c.Name).ToListAsync();
+            var list = await _majorService.GetAll();
+            return Ok(list);
+
+        }
+        [HttpGet("GetStudents")]
+        public async Task<IActionResult> GetStudents()
+        {
+            var list = await _context.Students.Include(c => c).ToListAsync();
             return Ok(list);
 
         }
@@ -46,7 +56,6 @@ namespace FirstApi.Controllers
             {
                  Name = model.Name,
                  Description = model.Description,
-                 TestColumn = "dxdsdsd"
 
             };
             await _context.Majors.AddAsync(obj);
@@ -88,5 +97,23 @@ namespace FirstApi.Controllers
             return Ok();
 
         }
+
+
+        [HttpGet("GetStudentsList")]
+        public async Task<IActionResult> GetStudentsList()
+        {
+            var list = await _context.Students.Include(c=>c.Major).ToListAsync();
+            var data = list.Select(v => new StudentModel()
+            {
+                Id = v.Id,
+                Name = v.Name,
+                Description = v.Description,
+                MajorName = v.Major?.Name
+
+            });
+            return Ok(data);
+
+        }
+
     }
 }
