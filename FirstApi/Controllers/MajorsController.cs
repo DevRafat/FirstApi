@@ -31,7 +31,7 @@ namespace FirstApi.Controllers
         [HttpGet("GetStudents")]
         public async Task<IActionResult> GetStudents()
         {
-            var list = await _context.Students.Include(c => c).ToListAsync();
+            var list = await _context.Students.Include(c => c.Major).ToListAsync();
             return Ok(list);
 
         }
