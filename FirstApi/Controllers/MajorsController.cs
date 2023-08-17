@@ -1,6 +1,8 @@
-﻿using FirstApi.Models;
+﻿using AutoMapper;
+using FirstApi.Models;
 using FirstApi.Service.Major;
 using FirstApi.Tables;
+using Hangfire;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,11 +15,13 @@ namespace FirstApi.Controllers
     {
       private readonly AplicationDbContext _context;
       private readonly IMajorService _majorService;
+      private readonly IMapper _mapper;
 
-        public MajorsController(AplicationDbContext context, IMajorService majorService)
+        public MajorsController(AplicationDbContext context, IMajorService majorService, IMapper mapper)
         {
             _context = context;
             _majorService = majorService;
+            _mapper = mapper;
         }
 
 
@@ -103,16 +107,49 @@ namespace FirstApi.Controllers
         public async Task<IActionResult> GetStudentsList()
         {
             var list = await _context.Students.Include(c=>c.Major).ToListAsync();
-            var data = list.Select(v => new StudentModel()
-            {
-                Id = v.Id,
-                Name = v.Name,
-                Description = v.Description,
-                MajorName = v.Major?.Name
+            var result=_mapper.Map<List<StudentModel>>(list);
+            //var data = list.Select(v => new StudentModel()
+            //{
+            //    Id = v.Id,
+            //    Name = v.Name,
+            //    Description = v.Description,
+            //    MajorName = v.Major?.Name
 
-            });
-            return Ok(data);
+            //});
+            return Ok(result);
 
+        }
+
+        [HttpGet("GetStudentById/{id}")]
+        public async Task<IActionResult> GetStudentById(int id)
+        {
+            var obj = await _context.Students.Include(c => c.Major).FirstOrDefaultAsync(c => c.Id == id);
+            var result = _mapper.Map<StudentModel>(obj);
+            
+            return Ok(result);
+
+        }
+
+        [HttpPost("addStudent")]
+        public async Task<IActionResult> addStudent(StudentModel m)
+        {
+
+            var obj=_mapper.Map<Student>(m);
+            obj.Major = null;
+            await _context.AddAsync(obj);
+            await _context.SaveChangesAsync();
+            return Ok(obj);
+
+        }
+
+        [HttpGet("SendMessage")]
+        public IActionResult SendMessage(string email)
+        {
+            //BackgroundJob.Enqueue(() => _majorService.SendMessage(email));
+            //BackgroundJob.Schedule(() => _majorService.SendMessage(email), TimeSpan.FromMinutes(1));
+            RecurringJob.AddOrUpdate(() => _majorService.SendMessage(email), Cron.Monthly);
+
+            return Ok();
         }
 
     }
