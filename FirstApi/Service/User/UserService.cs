@@ -13,11 +13,13 @@ namespace FirstApi.Service.User
     {
         private readonly AplicationDbContext _context;
         private readonly IConfiguration _configuration;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UserService(AplicationDbContext context, IConfiguration configuration)
+        public UserService(AplicationDbContext context, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _configuration = configuration;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<AppUser> AddUser(UserRequestModel m)
@@ -63,6 +65,14 @@ namespace FirstApi.Service.User
             return jwt;
         }
 
-       
+        public string? GetCurrentLoggedIn()
+        {
+            string result = string.Empty;
+            if (_httpContextAccessor.HttpContext is not null)
+            {
+                result = _httpContextAccessor.HttpContext.User.FindFirstValue("name");
+            }
+            return result;
+        }
     }
 }

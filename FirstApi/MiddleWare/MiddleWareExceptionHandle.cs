@@ -2,11 +2,11 @@
 
 namespace FirstApi.MiddleWare
 {
-    public class MiddleWareAuth
+    public class MiddleWareExceptionHandle
     {
         private readonly RequestDelegate _next;
 
-        public MiddleWareAuth(RequestDelegate next)
+        public MiddleWareExceptionHandle(RequestDelegate next)
         {
             _next = next;
         }

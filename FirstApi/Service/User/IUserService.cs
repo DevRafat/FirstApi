@@ -8,6 +8,7 @@ namespace FirstApi.Service.User
         Task<Tables.AppUser> AddUser(UserRequestModel m);
         Task<AppUser?> GetUser(AuthModel m);
         string CreateToken(string userName);
+        string GetCurrentLoggedIn();
 
     }
 }

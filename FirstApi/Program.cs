@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 using FirstApi.Filters;
 using FirstApi.MiddleWare;
 using FirstApi.Service.Cache;
-using FirstApi.Service.loggedIn;
+
 using FirstApi.Service.Major;
 using FirstApi.Service.User;
 using Hangfire;
@@ -29,10 +29,9 @@ builder.Services.AddMemoryCache();//Memory Cache register
 builder.Services.AddScoped<IMajorService, MajorService>();
 builder.Services.AddScoped<ICache, MemoryCache>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<ILoggedInService, LoggedInService>();
+
 builder.Services.AddScoped<CustomFilter>();
-
-
+builder.Services.AddHttpContextAccessor();
 
 
 builder.Services.AddHangfire(x => x.UseSqlServerStorage(connStr));
@@ -65,8 +64,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors(c => c.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
 app.UseHangfireDashboard("/dashboard");
-app.UseMiddleware<MiddleWareAuth>();
-app.UseMiddleware<JwtMiddleWare>();
+app.UseMiddleware<MiddleWareExceptionHandle>();
 app.UseAuthentication();
 app.UseAuthorization();
 

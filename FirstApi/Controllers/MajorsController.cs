@@ -2,6 +2,7 @@
 using FirstApi.Filters;
 using FirstApi.Models;
 using FirstApi.Service.Major;
+using FirstApi.Service.User;
 using FirstApi.Tables;
 using Hangfire;
 using Microsoft.AspNetCore.Authorization;
@@ -20,16 +21,16 @@ namespace FirstApi.Controllers
     {
       private readonly AplicationDbContext _context;
       private readonly IMajorService _majorService;
-      private readonly Helper _helper;
+      private readonly IUserService _userService;
 
         private readonly IMapper _mapper;
 
-        public MajorsController(AplicationDbContext context, IMajorService majorService, IMapper mapper, Helper helper)
+        public MajorsController(AplicationDbContext context, IMajorService majorService, IMapper mapper, IUserService userService)
         {
             _context = context;
             _majorService = majorService;
             _mapper = mapper;
-            _helper = helper;
+            _userService = userService;
         }
 
      
@@ -41,9 +42,10 @@ namespace FirstApi.Controllers
       
         public async Task<IActionResult>  GetMajors()
         {
+            var userName =  _userService.GetCurrentLoggedIn();
           
             var list = await _majorService.GetAll();
-            var loggedIn = _helper.CurrentLoggedIn;
+          
             return Ok(list);
 
         }
