@@ -13,10 +13,12 @@ namespace FirstApi
 
         public DbSet<Major> Majors { get; set; }
         public DbSet<Student> Students { get; set; }
+        public DbSet<AppUser?> AppUsers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new Majorconfiguration());
+            modelBuilder.ApplyConfiguration(new UserConfiguration());
 
 
         }

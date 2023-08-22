@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using FirstApi.Filters;
 using FirstApi.Models;
 using FirstApi.Service.Major;
 using FirstApi.Tables;
 using Hangfire;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,24 +13,37 @@ namespace FirstApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+
+    //[ServiceFilter(typeof(CustomFilter))]
+    [Authorize]
     public class MajorsController : ControllerBase
     {
       private readonly AplicationDbContext _context;
       private readonly IMajorService _majorService;
-      private readonly IMapper _mapper;
+      private readonly Helper _helper;
 
-        public MajorsController(AplicationDbContext context, IMajorService majorService, IMapper mapper)
+        private readonly IMapper _mapper;
+
+        public MajorsController(AplicationDbContext context, IMajorService majorService, IMapper mapper, Helper helper)
         {
             _context = context;
             _majorService = majorService;
             _mapper = mapper;
+            _helper = helper;
         }
 
+     
 
-        [HttpGet]
+
+
+       
+        [HttpGet("ListMajor")]
+      
         public async Task<IActionResult>  GetMajors()
         {
+          
             var list = await _majorService.GetAll();
+            var loggedIn = _helper.CurrentLoggedIn;
             return Ok(list);
 
         }
@@ -43,7 +58,7 @@ namespace FirstApi.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetMajorById(int id)
         {
-            var obj = await _context.Majors.FirstOrDefaultAsync(c => c.Id == id);
+            var obj = await _context.Majors.FirstAsync(c => c.Id == id);
             if (obj == null)
             {
                 return NotFound("the Major is not found");
