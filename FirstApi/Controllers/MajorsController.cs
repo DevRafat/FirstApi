@@ -16,7 +16,7 @@ namespace FirstApi.Controllers
     [ApiController]
 
     //[ServiceFilter(typeof(CustomFilter))]
-    [Authorize]
+    [Authorize(Roles ="Admin,User")]
     public class MajorsController : ControllerBase
     {
       private readonly AplicationDbContext _context;
@@ -39,6 +39,7 @@ namespace FirstApi.Controllers
 
        
         [HttpGet("ListMajor")]
+
       
         public async Task<IActionResult>  GetMajors()
         {
