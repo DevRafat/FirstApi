@@ -39,7 +39,6 @@ namespace FirstApi.Controllers
 
        
         [HttpGet("ListMajor")]
-
       
         public async Task<IActionResult>  GetMajors()
         {
